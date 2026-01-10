@@ -1,0 +1,683 @@
+/* ---------------- RESET ---------------- */
+* {
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+/* ---------------- THEME ---------------- */
+:root {
+  --primary: #0d6efd;
+  --bg-dark: #0f2027;
+  --bg-mid: #203a43;
+  --bg-light: #2c5364;
+  --glass: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --text-light: #f5f7fa;
+  --text-muted: #cfd8dc;
+}
+
+/* ---------------- BODY ---------------- */
+body {
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    var(--bg-dark),
+    var(--bg-mid),
+    var(--bg-light)
+  );
+  min-height: 100vh;
+  color: var(--text-light);
+}
+
+/* ---------------- AUTH PAGE ---------------- */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-glass {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 32px 40px;
+  border-radius: 18px;
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+/* ---------------- TEXT ---------------- */
+.brand {
+  font-size: 2.2rem;
+  margin-bottom: 6px;
+}
+
+.tagline {
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.center {
+  text-align: center;
+}
+
+/* ---------------- TOGGLE ---------------- */
+.auth-toggle {
+  display: flex;
+  margin-bottom: 24px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+}
+
+.auth-toggle button {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-toggle button.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  font-weight: 600;
+}
+
+/* ---------------- GOOGLE BUTTON ---------------- */
+.google-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.google-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* ---------------- SKELETON ---------------- */
+.skeleton-btn {
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    rgba(255, 255, 255, 0.35) 37%,
+    rgba(255, 255, 255, 0.15) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* ---------------- APP PAGES ---------------- */
+.app-page {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* Header */
+.app-header {
+  max-width: 1100px;
+  margin: 0 auto 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.header-actions button {
+  margin-left: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Main Glass Card */
+.app-glass {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 36px 32px 40px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.app-glass h1 {
+  margin-bottom: 10px;
+}
+
+.app-glass .subtitle {
+  margin-bottom: 28px;
+  color: #dbe3e8;
+}
+
+/* Secondary buttons */
+.secondary-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ---------------- LANDING PAGE ---------------- */
+
+.landing-page {
+  min-height: 100vh;
+  padding: 32px 48px;
+  color: #f5f7fa;
+}
+
+/* Header */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 80px;
+}
+
+.brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.user-chip img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Hero */
+.landing-hero {
+  max-width: 700px;
+}
+
+.landing-hero h1 {
+  font-size: 3.2rem;
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.landing-hero h1 span {
+  color: #8fd3f4;
+}
+
+.landing-hero p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #dbe3e8;
+  margin-bottom: 36px;
+}
+
+/* CTAs */
+.cta-group {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.primary-cta {
+  background: #0d6efd;
+  color: white;
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.primary-cta:hover {
+  opacity: 0.9;
+}
+
+.ghost-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ---------------- SCENARIO PAGE ---------------- */
+
+.scenario-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: #f5f7fa;
+}
+
+.scenario-glass {
+  width: 100%;
+  max-width: 620px;
+  padding: 40px 36px 44px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+}
+
+.scenario-glass h1 {
+  margin-bottom: 10px;
+}
+
+.scenario-glass .subtitle {
+  color: #dbe3e8;
+  margin-bottom: 28px;
+}
+
+/* Scenario cards */
+.scenario-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.scenario-card {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.scenario-card:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.scenario-card.active {
+  border-color: #8fd3f4;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.scenario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.scenario-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.duration {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Countdown */
+.countdown-big {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* ---------------- SPEAKING PAGE ---------------- */
+
+.speaking-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: #f5f7fa;
+}
+
+.speaking-glass {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 36px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+}
+
+.speaking-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: #cfd8dc;
+  margin-bottom: 16px;
+}
+
+.timer-big {
+  font-size: 3.6rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.mic-status {
+  font-size: 0.9rem;
+  margin-bottom: 22px;
+  color: #f28b82;
+}
+
+.mic-status.active {
+  color: #81c995;
+}
+
+.scenario-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #dbe3e8;
+  margin-bottom: 28px;
+}
+
+.stop-cta {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #dc3545;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stop-cta:hover {
+  opacity: 0.9;
+}
+
+/* ---------------- FEEDBACK PAGE ---------------- */
+
+.feedback-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: #f5f7fa;
+}
+
+.feedback-glass {
+  width: 100%;
+  max-width: 520px;
+  padding: 40px 36px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+}
+
+.feedback-glass h1 {
+  margin-bottom: 12px;
+}
+
+.feedback-message {
+  color: #dbe3e8;
+  margin-bottom: 28px;
+}
+
+/* Confidence */
+.confidence-block {
+  margin-bottom: 28px;
+}
+
+.confidence-block input {
+  width: 100%;
+  margin: 10px 0;
+}
+
+/* AI block */
+.ai-block {
+  margin-bottom: 32px;
+}
+
+.ai-block h3 {
+  margin-bottom: 10px;
+}
+
+.ai-text {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 14px;
+  border-radius: 12px;
+  line-height: 1.6;
+}
+
+/* Actions */
+.feedback-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.live-confidence {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+}
+
+.live-confidence h4 {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.live-confidence ul {
+  list-style: none;
+  padding: 0;
+}
+
+.live-confidence li {
+  margin-bottom: 4px;
+}
+
+.confidence-bar {
+  margin-top: 16px;
+  height: 14px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  position: relative;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #4caf50);
+  border-radius: 8px;
+  transition: width 0.4s ease;
+}
+
+.confidence-bar span {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* ---------- Landing Page Fix ---------- */
+
+.landing-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-card {
+  max-width: 480px;
+  width: 100%;
+  padding: 32px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.landing-card h1 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ---------- Speaking Page ---------- */
+
+.speaking-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speaking-stage {
+  width: 100%;
+  max-width: 720px;
+  padding: 32px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+.scenario-text {
+  margin-top: 8px;
+  opacity: 0.85;
+}
+
+.timer {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.camera-toggle {
+  margin-top: 16px;
+  opacity: 0.8;
+}
+
+.signals-card {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.signal-chips {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 14px;
+}
+
+.confidence-meter {
+  margin-top: 28px;
+}
+
+.confidence-label {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.confidence-bar {
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #ff6b6b,
+    #feca57,
+    #1dd1a1
+  );
+  transition: width 0.6s ease;
+}
