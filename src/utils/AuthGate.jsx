@@ -13,10 +13,15 @@ export default function AuthGate({ children }) {
     return unsub;
   }, []);
 
-  if (user === undefined) return null; // loading
+  if (user === undefined) {
+    // 🔄 Show minimal loader instead of blank screen
+    return <div className="auth-loading">Loading…</div>;
+  }
 
-  // ❌ Not logged in → force login route
-  if (!user) return <Navigate to="/login" />;
+  if (!user) {
+    // ❌ Not logged in → force login route
+    return <Navigate to="/login" />;
+  }
 
   // ✅ Logged in → show app
   return children;

@@ -4,20 +4,39 @@ export function useAudioAnalyzer() {
   const [audioMetrics, setAudioMetrics] = useState({
     isSpeaking: false,
     longPauses: 0,
+    silenceCount: 0,
+    everSpoke: false,
   });
 
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
+  const rafIdRef = useRef(null);
 
+  // High-frequency refs (NO React re-renders)
   const speakingFramesRef = useRef(0);
   const silentFramesRef = useRef(0);
   const longPauseCountRef = useRef(0);
+  const silenceCountRef = useRef(0);
+  const everSpokeRef = useRef(false);
+
+  // 🔒 Last emitted state (prevents infinite update loops)
+  const lastMetricsRef = useRef({
+    isSpeaking: false,
+    longPauses: 0,
+    silenceCount: 0,
+    everSpoke: false,
+  });
 
   useEffect(() => {
-    let rafId;
+    let stream;
 
     async function initMic() {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (e) {
+        console.error("Mic permission denied", e);
+        return;
+      }
 
       const audioContext = new AudioContext();
       audioContextRef.current = audioContext;
@@ -46,29 +65,47 @@ export function useAudioAnalyzer() {
         if (speakingNow) {
           speakingFramesRef.current++;
           silentFramesRef.current = 0;
+          everSpokeRef.current = true;
         } else {
           silentFramesRef.current++;
           speakingFramesRef.current = 0;
         }
 
-        let isSpeaking = audioMetrics.isSpeaking;
+        let isSpeaking = lastMetricsRef.current.isSpeaking;
 
-        // Debounce logic
+        // Speaking debounce
         if (speakingFramesRef.current > 6) {
           isSpeaking = true;
         }
 
+        // Silence detection
         if (silentFramesRef.current > 20) {
           isSpeaking = false;
           longPauseCountRef.current++;
+          silenceCountRef.current++;
         }
 
-        setAudioMetrics({
+        const nextMetrics = {
           isSpeaking,
           longPauses: longPauseCountRef.current,
-        });
+          silenceCount: silenceCountRef.current,
+          everSpoke: everSpokeRef.current,
+        };
 
-        rafId = requestAnimationFrame(analyze);
+        const last = lastMetricsRef.current;
+
+        // 🔒 React state update ONLY if something changed
+        if (
+          last.isSpeaking !== nextMetrics.isSpeaking ||
+          last.longPauses !== nextMetrics.longPauses ||
+          last.silenceCount !== nextMetrics.silenceCount ||
+          last.everSpoke !== nextMetrics.everSpoke
+        ) {
+          lastMetricsRef.current = nextMetrics;
+          setAudioMetrics(nextMetrics);
+        }
+
+        rafIdRef.current = requestAnimationFrame(analyze);
       };
 
       analyze();
@@ -77,7 +114,8 @@ export function useAudioAnalyzer() {
     initMic();
 
     return () => {
-      cancelAnimationFrame(rafId);
+      cancelAnimationFrame(rafIdRef.current);
+      stream?.getTracks().forEach((t) => t.stop());
       audioContextRef.current?.close();
     };
   }, []);

@@ -1,0 +1,42 @@
+export const QUESTIONS = [
+  {
+    id: "q_casual_01",
+    text: "Tell me about your favorite movie",
+    category: "casual",
+    difficulty: "low",
+    stakes: "practice",
+    duration: 60,
+  },
+  {
+    id: "q_personal_01",
+    text: "Tell me about yourself",
+    category: "personal",
+    difficulty: "medium",
+    stakes: "interview",
+    duration: 60,
+  },
+  {
+    id: "q_self_01",
+    text: "Tell me about your skills",
+    category: "self_evaluation",
+    difficulty: "high",
+    stakes: "interview",
+    duration: 90,
+  },
+  {
+    id: "q_self_02",
+    text: "Why should we hire you?",
+    category: "self_evaluation",
+    difficulty: "high",
+    stakes: "interview",
+    duration: 90,
+  },
+  {
+    id: "q_weak_01",
+    text: "What is your biggest weakness?",
+    category: "weakness",
+    difficulty: "high",
+    stakes: "interview",
+    duration: 90,
+  },
+];

@@ -1,35 +1,15 @@
 import { useEffect, useState } from "react";
-
-const SITUATIONS = [
-  {
-    id: "project",
-    title: "Project Explanation",
-    text: "Explain your project to a senior who is listening silently and taking notes.",
-    duration: 90,
-  },
-  {
-    id: "intro",
-    title: "Interview Introduction",
-    text: "Introduce yourself to an interviewer who is not smiling or reacting.",
-    duration: 60,
-  },
-  {
-    id: "concept",
-    title: "Technical Concept Explanation",
-    text: "Explain a technical concept you know well to someone evaluating your clarity.",
-    duration: 120,
-  },
-];
+import { QUESTIONS } from "../data/questions";
 
 function Situation({ onCountdownComplete }) {
-  const [selected, setSelected] = useState(SITUATIONS[0]);
+  const [selected, setSelected] = useState(QUESTIONS[0]);
   const [countdown, setCountdown] = useState(null);
 
   useEffect(() => {
     if (countdown === null) return;
 
     if (countdown === 0) {
-      onCountdownComplete(selected);
+      onCountdownComplete(selected); // ✅ now passing full question object
       return;
     }
 
@@ -43,27 +23,25 @@ function Situation({ onCountdownComplete }) {
   return (
     <div className="scenario-page">
       <div className="scenario-glass">
-        <h1>Select a Speaking Scenario</h1>
+        <h1>Select a Question</h1>
 
         <p className="subtitle">
-          Choose a real-life situation and speak continuously without interruption.
+          Choose a real-life question and speak continuously without interruption.
         </p>
 
         <div className="scenario-list">
-          {SITUATIONS.map((s) => (
+          {QUESTIONS.map((q) => (
             <div
-              key={s.id}
-              className={`scenario-card ${
-                selected.id === s.id ? "active" : ""
-              }`}
-              onClick={() => setSelected(s)}
+              key={q.id}
+              className={`scenario-card ${selected.id === q.id ? "active" : ""}`}
+              onClick={() => setSelected(q)}
             >
               <div className="scenario-header">
-                <h3>{s.title}</h3>
-                <span className="duration">{s.duration}s</span>
+                <h3>{q.title}</h3>
+                <span className="duration">{q.duration}s</span>
               </div>
 
-              <p>{s.text}</p>
+              <p>{q.text}</p>
             </div>
           ))}
         </div>

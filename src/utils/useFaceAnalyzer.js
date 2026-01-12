@@ -5,6 +5,12 @@ export function useFaceAnalyzer(enabled) {
   const landmarkerRef = useRef(null);
   const rafRef = useRef(null);
 
+  // 🔒 Last emitted values (prevents infinite React updates)
+  const lastMetricsRef = useRef({
+    eyeContact: null,
+    expressiveness: null,
+  });
+
   const [faceMetrics, setFaceMetrics] = useState({
     eyeContact: null,
     expressiveness: null,
@@ -12,7 +18,14 @@ export function useFaceAnalyzer(enabled) {
 
   useEffect(() => {
     if (!enabled) {
-      setFaceMetrics({ eyeContact: null, expressiveness: null });
+      lastMetricsRef.current = {
+        eyeContact: null,
+        expressiveness: null,
+      };
+      setFaceMetrics({
+        eyeContact: null,
+        expressiveness: null,
+      });
       return;
     }
 
@@ -21,7 +34,7 @@ export function useFaceAnalyzer(enabled) {
 
     async function init() {
       try {
-        // ⛔ WAIT until video exists
+        // ⛔ Wait until <video> exists
         if (!videoRef.current) {
           setTimeout(init, 100);
           return;
@@ -34,29 +47,30 @@ export function useFaceAnalyzer(enabled) {
         video.srcObject = stream;
         video.muted = true;
         video.playsInline = true;
-        await video.play();
 
-        // ⛔ LAZY IMPORT (THIS IS THE FIX)
+        try {
+          await video.play();
+        } catch {
+          // Ignore play interruption (browser race condition)
+        }
+
+        // Lazy-load MediaPipe
         const vision = await import("@mediapipe/tasks-vision");
-
-        const FilesetResolver = vision.FilesetResolver;
-        const FaceLandmarker = vision.FaceLandmarker;
+        const { FilesetResolver, FaceLandmarker } = vision;
 
         const resolver = await FilesetResolver.forVisionTasks(
           "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
         );
 
-        landmarkerRef.current = await FaceLandmarker.createFromOptions(
-          resolver,
-          {
+        landmarkerRef.current =
+          await FaceLandmarker.createFromOptions(resolver, {
             baseOptions: {
               modelAssetPath:
                 "https://storage.googleapis.com/mediapipe-assets/face_landmarker.task",
             },
             runningMode: "VIDEO",
             numFaces: 1,
-          }
-        );
+          });
 
         const analyze = () => {
           if (cancelled || !landmarkerRef.current) return;
@@ -78,10 +92,24 @@ export function useFaceAnalyzer(enabled) {
                 const expressiveness =
                   mouthOpen > 0.02 ? "Expressive" : "Flat";
 
-                setFaceMetrics({ eyeContact, expressiveness });
+                const last = lastMetricsRef.current;
+
+                // 🔒 Update React state ONLY if values changed
+                if (
+                  last.eyeContact !== eyeContact ||
+                  last.expressiveness !== expressiveness
+                ) {
+                  lastMetricsRef.current = {
+                    eyeContact,
+                    expressiveness,
+                  };
+                  setFaceMetrics({ eyeContact, expressiveness });
+                }
               }
             }
-          } catch {}
+          } catch {
+            // swallow occasional MediaPipe frame errors
+          }
 
           rafRef.current = requestAnimationFrame(analyze);
         };
@@ -97,7 +125,7 @@ export function useFaceAnalyzer(enabled) {
     return () => {
       cancelled = true;
       cancelAnimationFrame(rafRef.current);
-      if (stream) stream.getTracks().forEach(t => t.stop());
+      if (stream) stream.getTracks().forEach((t) => t.stop());
     };
   }, [enabled]);
 

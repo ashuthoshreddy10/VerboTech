@@ -13,10 +13,6 @@ function ConfidenceTrends() {
         label: "Self Confidence",
         data: sessions.map((s) => s.confidence),
       },
-      {
-        label: "Behavioral Confidence",
-        data: sessions.map((s) => s.finalConfidenceScore || 0),
-      },
     ],
   };
 

@@ -1,9 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useAudioAnalyzer } from "../utils/useAudioAnalyzer";
 import { useFaceAnalyzer } from "../utils/useFaceAnalyzer";
-import { saveSession } from "../utils/storage";
+import { getBaselineConfidence } from "../utils/storage"; // ✅ baseline import
 
-function Speaking({ situation, duration = 90, onFinish }) {
+function Speaking({ situation, onFinish }) {
+  // ✅ Step 1: derive duration from situation
+  const duration = situation?.duration ?? 90;
+
   const [timeLeft, setTimeLeft] = useState(duration);
   const [confidence, setConfidence] = useState(0);
   const [cameraEnabled, setCameraEnabled] = useState(true);
@@ -15,19 +18,68 @@ function Speaking({ situation, duration = 90, onFinish }) {
   const confidenceRef = useRef(35);
   const lastSpeechTimeRef = useRef(Date.now());
 
+  // --- Phase-2 additions ---
+  const confidenceSamplesRef = useRef([]);
+  const minConfidenceRef = useRef(100);
+  const varianceRef = useRef(0);
+
   /* ---------- TIMER ---------- */
   useEffect(() => {
     if (timeLeft <= 0) {
+      // compute variance at end of session
+      const samples = confidenceSamplesRef.current;
+      let variance = 0;
+
+      if (samples.length > 0) {
+        const mean =
+          samples.reduce((a, b) => a + b, 0) / samples.length;
+        variance =
+          samples.reduce((a, b) => a + (b - mean) ** 2, 0) /
+          samples.length;
+      }
+
+      varianceRef.current = variance;
+
+      const finalConfidence = Math.max(
+        20,
+        Math.round(confidenceRef.current)
+      );
+
+      const baseline = getBaselineConfidence();
+      let deltaConfidence = null;
+      if (baseline !== null) {
+        deltaConfidence = confidence - baseline;
+      }
+
       const sessionData = {
-        confidence,
+        // --- Question context ---
+        questionId: situation?.id,
+        scenarioTitle: situation?.title,
+        category: situation?.category,
+        difficulty: situation?.difficulty,
+        stakes: situation?.stakes,
+
+        // --- Behavioral confidence ---
+        avgConfidence: confidence,
+        minConfidence: minConfidenceRef.current,
+        confidenceVariance: varianceRef.current,
+
+        // --- Speech dynamics ---
         silenceCount: audioMetrics.silenceCount || 0,
+        silenceRatio: audioMetrics.silenceRatio || 0,
+
+        // ✅ Step 3: correct duration saved
         duration,
-        scenarioId: situation?.id || "",
-        scenarioTitle: situation?.title || situation?.text || "",
+
         neverSpoke: !audioMetrics.everSpoke,
+
+        // --- Delta features ---
+        deltaConfidenceVsCasual: deltaConfidence,
+
+        // --- Timestamp ---
+        time: new Date().toISOString(),
       };
 
-      saveSession(sessionData);
       onFinish(sessionData);
       return;
     }
@@ -56,7 +108,10 @@ function Speaking({ situation, duration = 90, onFinish }) {
     } else {
       const silenceDuration = now - lastSpeechTimeRef.current;
       if (silenceDuration > 1500) {
-        targetScore = Math.max(0, confidenceRef.current - 0.4);
+        targetScore = Math.max(
+          0,
+          confidenceRef.current - 0.4
+        );
       }
     }
 
@@ -65,8 +120,24 @@ function Speaking({ situation, duration = 90, onFinish }) {
       (targetScore - confidenceRef.current) * 0.08;
 
     confidenceRef.current = smoothed;
-    setConfidence(Math.round(smoothed));
-  }, [audioMetrics, eyeContact, expressiveness, cameraEnabled]);
+    const rounded = Math.round(smoothed);
+
+    setConfidence(prev =>
+      prev !== rounded ? rounded : prev
+    );
+
+    confidenceSamplesRef.current.push(rounded);
+    minConfidenceRef.current = Math.min(
+      minConfidenceRef.current,
+      rounded
+    );
+  }, [
+    audioMetrics.isSpeaking,
+    audioMetrics.longPauses,
+    eyeContact,
+    expressiveness,
+    cameraEnabled,
+  ]);
 
   return (
     <div className="speaking-wrapper">
@@ -100,7 +171,6 @@ function Speaking({ situation, duration = 90, onFinish }) {
           </div>
         )}
 
-        {/* LIVE SIGNALS */}
         <div className="signals-card">
           <h3>Live Confidence Signals</h3>
           <div className="signal-chips">
@@ -116,7 +186,6 @@ function Speaking({ situation, duration = 90, onFinish }) {
           </div>
         </div>
 
-        {/* CONFIDENCE BAR */}
         <div className="confidence-meter">
           <div className="confidence-label">
             Confidence Level: {confidence}%
